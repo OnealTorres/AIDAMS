@@ -1833,7 +1833,7 @@
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #6e707e;
+    color: #fff;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #d1d3e2;
@@ -5768,7 +5768,7 @@
     align-items: flex-start;
     justify-content: space-between;
     padding: 1rem 1rem;
-    border-bottom: 1px solid #e3e6f0;
+   
     border-top-left-radius: calc(0.3rem - 1px);
     border-top-right-radius: calc(0.3rem - 1px);
   }
@@ -9841,6 +9841,32 @@
     font-weight: 800;
   }
   
+
+  .add_button {
+    position: absolute;
+    right: 1rem;
+    bottom: 6rem;
+    display: block;
+    width: 2.75rem;
+    height: 2.75rem;
+    text-align: center;
+    color: #fff;
+    background: #FFFFFF;
+    line-height: 46px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 #8EA1C4  ;
+  }
+  
+  .add_button:focus, .add_button:hover {
+    color: white;
+  }
+  
+  .add_button:hover {
+    background: #5a5c69;
+  }
+  
+  .add_button i {
+    font-weight: 800;
+  }
   @-webkit-keyframes growIn {
     0% {
       transform: scale(0.9);
