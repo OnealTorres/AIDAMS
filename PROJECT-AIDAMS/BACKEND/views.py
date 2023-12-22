@@ -27,7 +27,6 @@ conn = psycopg2.connect(
 auth_key = config.get('device_auth','auth_key')
 
 
-
 '''
 ============================================================
      Decorator to check if the user is logged in or is admin
@@ -81,7 +80,6 @@ def contact():
         Dashboard 
 ==============================
 '''
-
 
 @views.route('/dashboard')
 @login_required
