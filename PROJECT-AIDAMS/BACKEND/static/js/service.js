@@ -131,7 +131,7 @@ async function register_account() {
   };
   url =
     "/signup/confirmation/" +
-    JSON.parse(sessionStorage.getItem("acc_data"))["acc_email"];
+    JSON.parse(sessionStorage.getItem("reg_data"))["acc_email"];
   success = "Verification Successful!";
   fail = "Verification Failed!";
   await POSTHandler(data, url, success, fail, true).then(
