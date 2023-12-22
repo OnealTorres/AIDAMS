@@ -581,15 +581,16 @@ def notification():
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT *, BLOC.acc_id as owner_id FROM BLC_MEMBER INNER JOIN BLOC USING(blc_id) WHERE BLC_MEMBER.acc_id = "+str(session.get('acc_id'))+" ; ")
             rows = cur.fetchone()
+                            
+            all_notification = None
+            list_of_devices = ""
+            index = 0
             
             if rows:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("SELECT dv_id FROM DEVICE WHERE acc_id = '"+str(rows['owner_id'])+"';")
                 devices = cur.fetchall()
-                
-                all_notification = None
-                list_of_devices = ""
-                index = 0
+
                 if devices:
                     for  device in devices:
                         
@@ -609,7 +610,7 @@ def notification():
                 if user_info['acc_profile']:
                     img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
                     profile =  f'data:image/png;base64, {img_data}'
-                return render_template('notification.htm', notifications = all_notification, user = user_info, profile_pic = profile)
+            return render_template('notification.htm', notifications = all_notification, user = user_info, profile_pic = profile)
     abort(404)
 
 
