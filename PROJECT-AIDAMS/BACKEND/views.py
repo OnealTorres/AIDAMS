@@ -980,7 +980,7 @@ def nodeMCUDeviceUpdate():
                serverAutoLockToggle = 1 
             
             cur.close()
-            #dv_auto_lock_time,dv_curfew_time,is_open_toggled,is_auto_lock_toggled,is_curfew_toggled
+            
             return f'{row["dv_auto_lock_time"]},{row["dv_curfew_time"]},{row["is_open_toggled"]},{row["is_auto_lock_toggled"]},{row["is_curfew_toggled"]},{serverLockToggle},{serverAutoLockToggle}'
             
     abort(404)  
