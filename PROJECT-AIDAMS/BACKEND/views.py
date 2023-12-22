@@ -326,7 +326,7 @@ def search_device(searched_data):
                 cur.execute("UPDATE DEVICE SET acc_id = '"+str(session.get('acc_id'))+"' WHERE dv_id = "+str(rows['dv_id'])+" ;")
                 conn.commit()
                 if session.get('acc_type') == 'USER':
-                    cur.execute("UPDATE ACCCOUNT SET acc_type = 'OWNER'  WHERE acc_id = "+str(session.get('acc_id'))+" ;")
+                    cur.execute("UPDATE ACCOUNT SET acc_type = 'OWNER'  WHERE acc_id = "+str(session.get('acc_id'))+" ;")
                     conn.commit()
                     session['acc_type'] = 'OWNER'
                 cur.close()
