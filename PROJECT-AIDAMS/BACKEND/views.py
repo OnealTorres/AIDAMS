@@ -462,6 +462,7 @@ def search_members(searched_data):
 @login_required
 def monitor():
     if request.method == 'GET':
+        return "TESTING"
         if session.get('acc_type') == 'OWNER':
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT dv_id FROM DEVICE WHERE acc_id = '"+str(session.get('acc_id'))+"';")
