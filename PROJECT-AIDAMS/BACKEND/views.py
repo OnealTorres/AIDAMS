@@ -462,7 +462,6 @@ def search_members(searched_data):
 @login_required
 def monitor():
     if request.method == 'GET':
-
         if session.get('acc_type') == 'OWNER':
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT dv_id FROM DEVICE WHERE acc_id = '"+str(session.get('acc_id'))+"';")
@@ -514,9 +513,9 @@ def monitor():
                 list_of_devices = ""
                 all_profile = []
                 index = 0
+                
                 if devices:
                     for  device in devices:
-                        
                         if index == 0:
                             list_of_devices = list_of_devices +" "+str(device['dv_id'])
                         else:
@@ -541,6 +540,8 @@ def monitor():
                     img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
                     profile =  f'data:image/png;base64, {img_data}'
                 return render_template('monitor.htm', history = all_history, profiles = all_profile, user = user_info, profile_pic = profile)
+    abort(404)
+    
       
 @views.route('/notification')
 @login_required
