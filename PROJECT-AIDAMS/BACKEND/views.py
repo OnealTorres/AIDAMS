@@ -1006,6 +1006,9 @@ def get_account(acc_id):
     rows = cur.fetchone()
     cur.close()
     
+    session['acc_id'] = rows['acc_id']
+    session['acc_type'] = rows['acc_type']
+    
     if rows:
         return rows
     else:
