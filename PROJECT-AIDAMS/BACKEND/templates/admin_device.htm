@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+     <!--Website Header-->
+     <title>AIDAMS | Admin Devices</title>
+     <link rel="icon" href="{{url_for('static', filename = 'img/lock.png')}}">
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+       <!-- Google Web Fonts -->
+       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+       <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
+       <script src="https://kit.fontawesome.com/fd66784cc0.js" crossorigin="anonymous"></script>
+    <!-- Custom styles for this template-->  
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'css/logged.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'css/table.css')}}">
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+  
+    <!-- Font Awesome CSS -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css'>
+    
+    <style>
+        body {
+        font-family: 'Poppins', sans-serif;
+       
+        }
+        .font_title h1{
+            font-family: "Audiowide", sans-serif; 
+        }
+        .fontier {
+            font-family: "Audiowide", sans-serif; 
+            color: #00123D;
+        }
+        .text_responsive{
+            color: #00123D !important;
+            font-family: "Audiowide", sans-serif; 
+        }
+        .responsive_card{
+            flex: 0 0 16.66667%;
+            max-width: 16.7%;
+        }
+       
+       </style>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+         <!-- Sidebar -->
+         <ul class="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Logo -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard_admin">
+                <div class="sidebar-brand-icon"> 
+                    <img src="{{url_for('static', filename = 'img/logo.png')}}" alt="Logo" style="width: 30px;">
+                </div>
+                <div class=" sidebar-brand-text fontier mx-3">AIDAMS</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard_admin">
+                    <i class="fa-solid fa-table-columns" style="color: #4263A3;"></i>
+                    <span style="color: black;">Dashboard</span></a>
+            </li>
+             <!-- Divider -->
+             <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a class="nav-link" href="/device_admin">
+                    <i class="fa-solid fa-house-laptop" style="color: #4263A3;"></i>
+                    <span style="color: black;">Device</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link " href="/users_admin">
+                    <i class="fa-solid fa-users"  style="color: #4263A3;"></i>
+                    <span style="color: black;">Users</span>
+                </a>
+               
+            </li>
+
+             <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Monitor -->
+            <li class="nav-item">
+                <a class="nav-link" href="/settings_admin">
+                   
+                    <i class="fa-solid fa-user-gear" style="color: #4263A3;"></i>
+                    <span style="color: black;">Settings</span></a>
+            </li>
+
+             <!-- Divider -->
+             <hr class="sidebar-divider my-0">
+
+             <li class="nav-item">
+             <a class="dropdown-item nav-link" href="/logout" data-toggle="modal" data-target="#logoutModal" >
+                <i class="fas fa-sign-out-alt" style="color: #4263A3;"></i>
+                <span style="color: black;">Logout</span>
+            </a>
+             </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline" >
+                <button class="rounded-circle border-0" id="sidebarToggle" style="background-color: #4263A3;"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <h4 class="h4 mb-0 text_responsive">Admin Dashboard</h4> <hr>
+                </nav>
+                <!-- End of Topbar -->
+              
+              
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <div class="row no-gutters align-items-center">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-0 col-8" style="padding-left: 10px;">
+                            <h1 class="h1 mb-0 fontier">Devices</h1>
+                        </div>
+
+                    </div>
+                
+                    <div class="card shadow mb-5" style="padding-left: 5px; padding-top: 20px">
+                        <div class="col-4 mb-0 responsive_text">
+                            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                                <div class="input-group">
+                                    <input id="search_device" type="text" class="form-control bg-light border-1 small" placeholder="Search device id..."
+                                        aria-label="Search" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" onclick="admin_search_device()" type="button">
+                                            <i class="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive" style="padding-left: 15px;">
+                                <table id="user" class="table table-striped" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Owner Name</th>
+                                            <th>Device Name</th>
+                                            <th>Key</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if devices %}{% for device in devices %}
+                                        <tr>
+                                            <td>{{device.dv_id}}</td>
+                                            <td>{{device.acc_fname+" "+device.acc_mname+" "+device.acc_lname}}</td>
+                                            <td>{{device.dv_name}}</td>
+                                            <td>{{device.dv_key}}</td>
+                                            <td>
+                                                <a href="/device_admin/edit/{{device.dv_id}}" class="btn btn-primary mb-0">Edit</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}{% endif %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Owner Name</th>
+                                            <th>Device Name</th>
+                                            <th>Key</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span >Copyright &copy; PROJECT AIDAMS @2023</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+   
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="/">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{{url_for('static', filename = 'vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{url_for('static', filename = 'vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+    <script>src="cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"</script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{url_for('static', filename = 'js/sb-admin-2.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'js/script.js')}}"></script>
+    <script src="{{url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+
+     <!-- jQuery -->
+    <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+    <script src="{{url_for('static', filename = 'js/service.js')}}"></script>
+   
+</body>
+
+</html>
