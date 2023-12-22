@@ -509,7 +509,7 @@ def monitor():
             list_of_devices = ""
             all_profile = []
             index = 0
-            
+            user_info = get_account(session.get('acc_id'))
             if rows:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("SELECT dv_id FROM DEVICE WHERE acc_id = '"+str(rows['owner_id'])+"';")
@@ -535,7 +535,6 @@ def monitor():
                             elif not user['acc_profile']:
                                 all_profile.append(None)
                         all_history = rows
-                user_info = get_account(session.get('acc_id'))
                 profile = None
                 if user_info['acc_profile']:
                     img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
@@ -585,7 +584,7 @@ def notification():
             all_notification = None
             list_of_devices = ""
             index = 0
-            
+            user_info = get_account(session.get('acc_id'))
             if rows:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("SELECT dv_id FROM DEVICE WHERE acc_id = '"+str(rows['owner_id'])+"';")
@@ -605,7 +604,7 @@ def notification():
                     rows = cur.fetchall()
                     if rows:
                         all_notification = rows
-                user_info = get_account(session.get('acc_id'))
+                
                 profile = None
                 if user_info['acc_profile']:
                     img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
