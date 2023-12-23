@@ -149,6 +149,11 @@ async function register_account() {
 */
 
 async function dashboard_lock(dv_status, dv_id) {
+  var elements = document.querySelectorAll("#btn-toggle-open-close");
+  elements.forEach(function (element) {
+    element.disabled = true;
+  });
+
   data = {};
   url = "/dashboard_btn/" + dv_id + "/" + dv_status;
   success = "Successfuly Change Door Staus ";
@@ -160,6 +165,7 @@ async function dashboard_lock(dv_status, dv_id) {
 }
 
 async function dashboard_mode_auto_lock(dv_auto_lock) {
+  document.getElementById("chk-auto-lock").disabled = true;
   data = {};
   url = "/dashboard-auto-lock/" + dv_auto_lock;
   success = "Successfuly Change  Auto Lock Status ";
@@ -171,6 +177,7 @@ async function dashboard_mode_auto_lock(dv_auto_lock) {
 }
 
 async function dashboard_mode_curfew(dv_cufew) {
+  document.getElementById("chk-curfew").disabled = true;
   data = {};
   url = "/dashboard-curfew/" + dv_cufew;
   success = "Successfuly Change Curfew Status ";

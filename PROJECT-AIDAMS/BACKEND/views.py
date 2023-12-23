@@ -5,7 +5,7 @@ from configparser import ConfigParser
 import os
 import base64
 from functools import wraps
-from datetime import datetime, time 
+from datetime import datetime, time, timedelta
 
 views = Blueprint('views', __name__)
 # Configuration
@@ -154,11 +154,21 @@ def dashboard_btn_lock(dv_status, dv_id):
             row = cur.fetchone()
             
             if row:
-                curfew_time_str = row['dv_curfew_time']
                 current_time = datetime.now().time()
+
+                # Convert the current time to a datetime object with a dummy date
+                current_datetime = datetime.combine(datetime.today(), current_time)
+
+                # Add 8 hours to the current datetime
+                new_datetime = current_datetime + timedelta(hours=8)
+
+                # Extract the time part from the new datetime
+                new_current_time = new_datetime.time
+                
+                curfew_time_str = row['dv_curfew_time']
                 curfew_limit_time = time(5, 0, 0) #5 AM
                 
-                if row['dv_curfew'] and current_time < curfew_time_str and current_time > curfew_limit_time:
+                if row['dv_curfew'] and new_current_time < curfew_time_str and new_current_time > curfew_limit_time:
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                     cur.execute("INSERT INTO HISTORY (acc_id,dv_id,his_dv_status) VALUES ( "+str(session.get('acc_id'))+", "+str(dv_id)+", "+str(dv_status)+" ); ")
                     conn.commit()
@@ -170,7 +180,7 @@ def dashboard_btn_lock(dv_status, dv_id):
                     response_data = {"message": "Success"}
                     return jsonify(response_data), 200
                 
-                if row['dv_curfew'] and current_time > curfew_time_str and current_time < curfew_limit_time:
+                if row['dv_curfew'] and new_current_time > curfew_time_str and new_current_time < curfew_limit_time:
                     abort(404)
                 
                 else:
@@ -484,7 +494,7 @@ def monitor():
                     index+=1
                     
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("SELECT *, TO_CHAR(HISTORY.date_created, 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM HISTORY INNER JOIN ACCOUNT USING(acc_id) INNER JOIN DEVICE USING(dv_id) WHERE DEVICE.dv_id IN ( "+list_of_devices+" ) ORDER BY HISTORY.date_created DESC LIMIT 20; ")
+                cur.execute("SELECT HISTORY.*, TO_CHAR(HISTORY.date_created + INTERVAL '8 hours', 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM HISTORY INNER JOIN ACCOUNT USING(acc_id) INNER JOIN DEVICE USING(dv_id) WHERE DEVICE.dv_id IN ( "+list_of_devices+" ) ORDER BY HISTORY.date_created DESC LIMIT 20; ")
                 rows = cur.fetchall()
                 if rows:
                     for user in rows:
@@ -527,7 +537,7 @@ def monitor():
                         index+=1
                         
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                    cur.execute("SELECT *, TO_CHAR(HISTORY.date_created, 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM HISTORY LEFT JOIN ACCOUNT USING(acc_id) LEFT JOIN DEVICE USING(dv_id) WHERE DEVICE.dv_id IN ( "+list_of_devices+" ) ORDER BY HISTORY.date_created DESC LIMIT 20; ")
+                    cur.execute("SELECT *, TO_CHAR(HISTORY.date_created + INTERVAL '8 hours', 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM HISTORY LEFT JOIN ACCOUNT USING(acc_id) LEFT JOIN DEVICE USING(dv_id) WHERE DEVICE.dv_id IN ( "+list_of_devices+" ) ORDER BY HISTORY.date_created DESC LIMIT 20; ")
                     rows = cur.fetchall()
                     if rows:
                         for user in rows:
@@ -568,7 +578,7 @@ def notification():
                     index+=1
                     
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("SELECT *, TO_CHAR(NOTIFICATION.date_created, 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM NOTIFICATION LEFT JOIN DEVICE USING(dv_id) WHERE NOTIFICATION.dv_id IN ( "+list_of_devices+" ) ORDER BY NOTIFICATION.date_created DESC LIMIT 20; ")
+                cur.execute("SELECT *, TO_CHAR(NOTIFICATION.date_created + INTERVAL '8 hours', 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM NOTIFICATION LEFT JOIN DEVICE USING(dv_id) WHERE NOTIFICATION.dv_id IN ( "+list_of_devices+" ) ORDER BY NOTIFICATION.date_created DESC LIMIT 20; ")
                 rows = cur.fetchall()
                 if rows:
                     all_notification = rows
@@ -604,7 +614,7 @@ def notification():
                         index+=1
                         
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                    cur.execute("SELECT *, TO_CHAR(NOTIFICATION.date_created, 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM NOTIFICATION LEFT JOIN DEVICE USING(dv_id) WHERE dv_id IN ( "+list_of_devices+" ) ORDER BY NOTIFICATION.date_created DESC LIMIT 20; ")
+                    cur.execute("SELECT *, TO_CHAR(NOTIFICATION.date_created + INTERVAL '8 hours', 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM NOTIFICATION LEFT JOIN DEVICE USING(dv_id) WHERE dv_id IN ( "+list_of_devices+" ) ORDER BY NOTIFICATION.date_created DESC LIMIT 20; ")
                     rows = cur.fetchall()
                     if rows:
                         all_notification = rows
@@ -986,8 +996,8 @@ def nodeMCUDeviceUpdate():
                serverAutoLockToggle = 1 
             
             cur.close()
-            
-            return f'{row["dv_auto_lock_time"]},{row["dv_curfew_time"]},{row["is_open_toggled"]},{row["is_auto_lock_toggled"]},{row["is_curfew_toggled"]},{serverLockToggle},{serverAutoLockToggle}'
+            current_time = datetime.now().time()
+            return f'{row["dv_auto_lock_time"]},{row["dv_curfew_time"]},{row["is_open_toggled"]},{row["is_auto_lock_toggled"]},{row["is_curfew_toggled"]},{serverLockToggle},{serverAutoLockToggle},{current_time}'
             
     abort(404)  
         

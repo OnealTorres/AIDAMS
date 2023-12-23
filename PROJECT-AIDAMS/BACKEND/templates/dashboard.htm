@@ -293,7 +293,7 @@
                   <a class="dropdown-item" href="#"
                     >Auto Lock
                     <label class="switch" id="user_autolock">
-                      <input
+                      <input id="chk-auto-lock"
                       onchange="dashboard_mode_auto_lock('{{devices[0].dv_auto_lock
                       if devices}}')" type="checkbox" {{ 'checked' if devices
                       and devices[0].dv_auto_lock else '' }} />
@@ -303,7 +303,7 @@
                   <a class="dropdown-item" href="#"
                     >Curfew Mode
                     <label class="switch">
-                      <input
+                      <input id="chk-curfew"
                       onchange="dashboard_mode_curfew('{{devices[0].dv_curfew if
                       devices}}')" type="checkbox" {{ 'checked' if devices and
                       devices[0].dv_curfew else '' }} id="user_curfewmode" />
@@ -351,6 +351,7 @@
 
                       <div class="col-2 mb-0">
                         <button
+                          id="btn-toggle-open-close"
                           type="button"
                           class="btn btn-icon btn-primary mb-0"
                           onclick="dashboard_lock('{{device.dv_status}}', {{device.dv_id}})"
