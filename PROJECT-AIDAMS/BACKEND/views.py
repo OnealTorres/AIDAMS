@@ -114,11 +114,12 @@ def dashboard():
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("SELECT *, FLOOR(EXTRACT(EPOCH FROM current_timestamp - date_updated) / 60) AS minutes_passed FROM DEVICE WHERE acc_id = "+str(rows['owner_id'])+" ORDER BY(dv_id);")
                 rows = cur.fetchall()
-                cur.close()
+                
                 if (rows):
                     all_device = rows
                     
             user_info = get_account(session.get('acc_id'))
+            cur.close()
             profile = None
             if user_info['acc_profile']:
                 img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
@@ -325,12 +326,13 @@ def search_device(searched_data):
             if data['dv_password'] == rows['dv_password']:
                 cur.execute("UPDATE DEVICE SET acc_id = '"+str(session.get('acc_id'))+"' WHERE dv_id = "+str(rows['dv_id'])+" ;")
                 conn.commit()
+                
                 if session.get('acc_type') == 'USER':
                     cur.execute("UPDATE ACCOUNT SET acc_type = 'OWNER'  WHERE acc_id = "+str(session.get('acc_id'))+" ;")
                     conn.commit()
                     session['acc_type'] = 'OWNER'
-                cur.close()
                 
+                cur.close()
                 response_data = {"message": "Success"}
                 return jsonify(response_data), 200
 
@@ -629,7 +631,7 @@ def settings():
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("SELECT * FROM DEVICE WHERE acc_id ="+str(session.get('acc_id'))+"")
         rows = cur.fetchone()
-        cur.close()
+        
         if rows:
             auto_lock_set_time = rows['dv_auto_lock_time']
   
@@ -645,6 +647,8 @@ def settings():
         if user_info['acc_profile']:
             img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
             profile =  f'data:image/png;base64, {img_data}'
+        
+        cur.close()
         return render_template('settings.htm' , auto_lock_time =  auto_lock_set_time, curfew_time = curfew_set_time , user = user_info, profile_pic = profile)
 
 @views.route('/settings/auto_lock')
