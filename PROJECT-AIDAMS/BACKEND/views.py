@@ -939,7 +939,8 @@ def nodeMCUDeviceUpdate():
     if request.method == 'GET':
         dv_key = request.args.get('dv_key')
         is_opened = request.args.get('is_opened')
-        is_auto_lock_activated = request.args.get('is_auto_lock_activated')
+        is_auto_lock_activated = request.args.get('is_auto_lock_activated') 
+        is_door_opened = request.args.get('is_door_opened')
         is_opened_too_long = request.args.get('is_opened_too_long')
         is_tampered = request.args.get('is_tampered')
         serverLockToggle = request.args.get('serverLockToggle')
@@ -963,7 +964,7 @@ def nodeMCUDeviceUpdate():
             if not row:
                 abort(404)
             
-            if is_opened == '1' and row["is_open_toggled"] == True:
+            if is_door_opened == '1' and row["is_open_toggled"] == True:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO NOTIFICATION (ntf_type, ntf_message, dv_id) VALUES ('Door Is Open', 'Please close the door.', (SELECT dv_id FROM DEVICE WHERE dv_key = '"+dv_key+"'));")
                 conn.commit()
