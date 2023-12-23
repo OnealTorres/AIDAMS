@@ -71,4 +71,19 @@ CREATE TABLE NOTIFICATION (
     DV_ID INT NOT NULL,
     FOREIGN KEY (DV_ID) REFERENCES DEVICE(DV_ID) ON UPDATE CASCADE
 );
- 
+
+
+CREATE OR REPLACE FUNCTION update_date_updated()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.date_updated = NOW(); -- Set the date_updated to the current timestamp
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER device_status_update_trigger
+BEFORE UPDATE ON device
+FOR EACH ROW
+WHEN (OLD.dv_status IS DISTINCT FROM NEW.dv_status)
+EXECUTE FUNCTION update_date_updated();
+
