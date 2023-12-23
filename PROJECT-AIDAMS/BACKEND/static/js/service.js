@@ -156,7 +156,7 @@ async function dashboard_lock(dv_status, dv_id) {
   await POSTHandler(data, url, success, fail, false);
   setTimeout(function () {
     window.location.href = "/dashboard";
-  }, 5000);
+  }, 4000);
 }
 
 async function dashboard_mode_auto_lock(dv_auto_lock) {
@@ -165,7 +165,9 @@ async function dashboard_mode_auto_lock(dv_auto_lock) {
   success = "Successfuly Change  Auto Lock Status ";
   fail = "Change Failed";
   await POSTHandler(data, url, success, fail, false);
-  window.location.href = "/dashboard";
+  setTimeout(function () {
+    window.location.href = "/dashboard";
+  }, 4000);
 }
 
 async function dashboard_mode_curfew(dv_cufew) {

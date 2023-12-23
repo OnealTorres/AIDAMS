@@ -194,7 +194,7 @@ def dashboard_auto_lock(dv_auto_lock):
         dv_auto_lock = True  if dv_auto_lock == 'False' else False
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        cur.execute("UPDATE DEVICE SET dv_auto_lock = '"+str(dv_auto_lock)+"', is_auto_lock_toggled = 'True' WHERE acc_id = "+str(session.get('acc_id'))+" ;")
+        cur.execute("UPDATE DEVICE SET is_auto_lock_toggled = 'True' WHERE acc_id = "+str(session.get('acc_id'))+" ;")
         conn.commit()
         cur.close()
         response_data = {"message": "Success"}
@@ -939,6 +939,7 @@ def nodeMCUDeviceUpdate():
     if request.method == 'GET':
         dv_key = request.args.get('dv_key')
         is_opened = request.args.get('is_opened')
+        is_auto_lock_activated = request.args.get('is_auto_lock_activated')
         is_opened_too_long = request.args.get('is_opened_too_long')
         is_tampered = request.args.get('is_tampered')
         serverLockToggle = request.args.get('serverLockToggle')
@@ -950,7 +951,7 @@ def nodeMCUDeviceUpdate():
             
             if serverLockToggle == '1' or serverAutoLockToggle == '1':
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("UPDATE DEVICE SET is_open_toggled = false, is_auto_lock_toggled = false, is_curfew_toggled = false, dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
+                cur.execute("UPDATE DEVICE SET is_open_toggled = false, is_auto_lock_toggled = false, is_curfew_toggled = false, dv_status = '"+str(is_opened)+"', dv_auto_lock = '"+str(is_auto_lock_activated)+"' WHERE dv_key = '"+dv_key+"';")
                 conn.commit()
                 serverLockToggle = 0
                 serverAutoLockToggle = 0
