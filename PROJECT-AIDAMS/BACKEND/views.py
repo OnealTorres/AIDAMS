@@ -494,7 +494,7 @@ def monitor():
                     index+=1
                     
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("SELECT HISTORY.*, TO_CHAR(HISTORY.date_created + INTERVAL '8 hours', 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM HISTORY INNER JOIN ACCOUNT USING(acc_id) INNER JOIN DEVICE USING(dv_id) WHERE DEVICE.dv_id IN ( "+list_of_devices+" ) ORDER BY HISTORY.date_created DESC LIMIT 20; ")
+                cur.execute("SELECT *, TO_CHAR(HISTORY.date_created + INTERVAL '8 hours', 'YYYY-MM-DD HH12:MI AM') AS formatted_date_created FROM HISTORY INNER JOIN ACCOUNT USING(acc_id) INNER JOIN DEVICE USING(dv_id) WHERE DEVICE.dv_id IN ( "+list_of_devices+" ) ORDER BY HISTORY.date_created DESC LIMIT 20; ")
                 rows = cur.fetchall()
                 if rows:
                     for user in rows:
