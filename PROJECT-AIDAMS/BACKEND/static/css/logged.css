@@ -1770,7 +1770,13 @@
     color: #fff;
     background-color: rgba(255, 255, 255, 0.075);
   }
-  
+  @media (max-width: 375.98px) {
+    .fontier {
+      font-family: "Audiowide", sans-serif;
+      color: #00123d;
+      font-size: 1.5em;
+    }
+  }
   @media (max-width: 575.98px) {
     .table-responsive-sm {
       display: block;

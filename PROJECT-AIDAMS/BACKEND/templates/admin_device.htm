@@ -6,34 +6,34 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-     <!--Website Header-->
-     <title>AIDAMS | Admin Devices</title>
-     <link rel="icon" href="{{url_for('static', filename = 'img/lock.png')}}">
+    <!--Website Header-->
+    <title>AIDAMS | Admin Devices</title>
+    <link rel="icon" href="{{url_for('static', filename = 'img/lock.png')}}">
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
-       <!-- Google Web Fonts -->
-       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
-       <link rel="preconnect" href="https://fonts.googleapis.com">
-       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
-       <script src="https://kit.fontawesome.com/fd66784cc0.js" crossorigin="anonymous"></script>
+    <!-- Google Web Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/fd66784cc0.js" crossorigin="anonymous"></script>
     <!-- Custom styles for this template-->  
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'css/logged.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'css/table.css')}}">
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
-  
+
     <!-- Font Awesome CSS -->
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css'>
     
     <style>
         body {
         font-family: 'Poppins', sans-serif;
-       
+    
         }
         .font_title h1{
             font-family: "Audiowide", sans-serif; 
@@ -50,8 +50,8 @@
             flex: 0 0 16.66667%;
             max-width: 16.7%;
         }
-       
-       </style>
+    
+    </style>
 </head>
 
 <body id="page-top">
@@ -59,8 +59,8 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
 
-         <!-- Sidebar -->
-         <ul class="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Logo -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard_admin">
@@ -79,8 +79,8 @@
                     <i class="fa-solid fa-table-columns" style="color: #4263A3;"></i>
                     <span style="color: black;">Dashboard</span></a>
             </li>
-             <!-- Divider -->
-             <hr class="sidebar-divider my-0">
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
 
             <li class="nav-item">
                 <a class="nav-link" href="/device_admin">
@@ -97,29 +97,29 @@
                     <i class="fa-solid fa-users"  style="color: #4263A3;"></i>
                     <span style="color: black;">Users</span>
                 </a>
-               
+            
             </li>
 
-             <!-- Divider -->
+            <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Monitor -->
             <li class="nav-item">
                 <a class="nav-link" href="/settings_admin">
-                   
+                
                     <i class="fa-solid fa-user-gear" style="color: #4263A3;"></i>
                     <span style="color: black;">Settings</span></a>
             </li>
 
-             <!-- Divider -->
-             <hr class="sidebar-divider my-0">
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
 
-             <li class="nav-item">
-             <a class="dropdown-item nav-link" href="/logout" data-toggle="modal" data-target="#logoutModal" >
+            <li class="nav-item">
+            <a class="dropdown-item nav-link" href="/logout" data-toggle="modal" data-target="#logoutModal" >
                 <i class="fas fa-sign-out-alt" style="color: #4263A3;"></i>
                 <span style="color: black;">Logout</span>
             </a>
-             </li>
+            </li>
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
@@ -147,8 +147,8 @@
                     <h4 class="h4 mb-0 text_responsive">Admin Dashboard</h4> <hr>
                 </nav>
                 <!-- End of Topbar -->
-              
-              
+            
+            
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <div class="row no-gutters align-items-center">
@@ -172,9 +172,13 @@
                                 </div>
                             </form>
                         </div>
+                    
+
                         <div class="card-body">
+                            <div class="" style="padding-left: 15px; padding-top: 20px">
+                            <div style="max-height: 300px; overflow-y:auto">
                             <div class="table-responsive" style="padding-left: 15px;">
-                                <table id="user" class="table table-striped" style="width:100%">
+                                <table id="user" class="table table-striped" style="width:100%; overflow-x: hidden">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -232,7 +236,7 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-   
+
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -266,10 +270,10 @@
     <script src="{{url_for('static', filename = 'js/script.js')}}"></script>
     <script src="{{url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
 
-     <!-- jQuery -->
+    <!-- jQuery -->
     <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
     <script src="{{url_for('static', filename = 'js/service.js')}}"></script>
-   
+
 </body>
 
 </html>

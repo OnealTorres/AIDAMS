@@ -230,7 +230,6 @@ def dashboard_curfew(dv_curfew):
 ==============================
 ''' 
 
-
 @views.route('/account', methods = ['GET', 'POST'])
 @login_required
 def user_account():
@@ -818,7 +817,11 @@ def admin_users_search(searched_data):
 @admin_required
 def edit_users(acc_id):
     if request.method == 'GET':
-        user_data = get_account(acc_id)
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+        cur.execute("SELECT acc_id, acc_fname, acc_mname, acc_lname, acc_password, acc_contact, acc_email, acc_status FROM ACCOUNT WHERE acc_id ="+str(acc_id)+"")
+        user_data = cur.fetchone()
+        cur.close()
+        
         return render_template('edit_admin_users.htm', user = user_data)
     
     elif request.method == 'POST':

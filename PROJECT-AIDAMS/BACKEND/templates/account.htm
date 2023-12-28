@@ -177,7 +177,7 @@
             >
               <i class="fa fa-bars"></i>
             </button>
-            <h4 class="h4 mb-0 fontier text_responsive">Settings</h4>
+            <h4 class="h4 mb-0 fontier text_responsive">Account</h4>
             <hr />
             <!-- Topbar Search -->
             <form
@@ -186,8 +186,8 @@
               <div class="input-group"></div>
             </form>
 
-            <!-- Topbar Navbar -->
-            <ul class="navbar-nav ml-auto">
+             <!-- Topbar Navbar -->
+             <ul class="navbar-nav ml-auto">
               <div class="topbar-divider d-none d-sm-block"></div>
 
               <!-- Nav Item - User Information -->
@@ -208,7 +208,7 @@
                   <img
                     class="img-profile rounded-circle"
                     style="width: 35px; height: 35px; object-fit: cover"
-                    src="{% if profile_pic %}{{ profile_pic }}{% else %}{{ url_for('static', filename='img/testimonial-2.jpg') }}{% endif %}"
+                    src="{% if profile_pic %}{{ profile_pic }}{% else %}{{ url_for('static', filename='img/user_default_Icon.png') }}{% endif %}"
                   />
                 </a>
                 <!-- Dropdown - User Information Magamit ni Siya sa settigns pwede ra  -->
@@ -280,7 +280,7 @@
                             <div class="col-md-3">
                                 <!--Kani nga part kay need kuhaon ang image, email sa DB-->
                                 <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                                    <img class="rounded-circle mt-5" id="display_image" width="150px" height="150px" style="object-fit: cover" src="{% if user.acc_profile %}{{ user_profile }}{% else %}{{ url_for('static', filename='img/Chares.png') }}{% endif %}">
+                                    <img class="rounded-circle mt-5" id="display_image" width="150px" height="150px" style="object-fit: cover" src="{% if user.acc_profile %}{{ user_profile }}{% else %}{{ url_for('static', filename='img/user_default_Icon.png') }}{% endif %}">
 
                                     <br>
                                     <input type="file" name="profile pic" id="profile_pic" style="width: 110px;">

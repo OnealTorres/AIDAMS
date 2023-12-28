@@ -202,63 +202,63 @@
               <div class="input-group"></div>
             </form>
 
-            <!-- Topbar Navbar -->
-            <ul class="navbar-nav ml-auto">
-              <div class="topbar-divider d-none d-sm-block"></div>
+           <!-- Topbar Navbar -->
+           <ul class="navbar-nav ml-auto">
+            <div class="topbar-divider d-none d-sm-block"></div>
 
-              <!-- Nav Item - User Information -->
-              <li class="nav-item dropdown no-arrow">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  id="userDropdown"
-                  role="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="userDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                  >{{user.acc_fname+" "+user.acc_mname+"
+                  "+user.acc_lname}}</span
                 >
-                  <span class="mr-2 d-none d-lg-inline text-gray-600 small"
-                    >{{user.acc_fname+" "+user.acc_mname+"
-                    "+user.acc_lname}}</span
-                  >
-                  <img
-                    class="img-profile rounded-circle"
-                    style="width: 35px; height: 35px; object-fit: cover"
-                    src="{% if profile_pic %}{{ profile_pic }}{% else %}{{ url_for('static', filename='img/testimonial-2.jpg') }}{% endif %}"
-                  />
+                <img
+                  class="img-profile rounded-circle"
+                  style="width: 35px; height: 35px; object-fit: cover"
+                  src="{% if profile_pic %}{{ profile_pic }}{% else %}{{ url_for('static', filename='img/user_default_Icon.png') }}{% endif %}"
+                />
+              </a>
+              <!-- Dropdown - User Information Magamit ni Siya sa settigns pwede ra  -->
+              <div
+                class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="userDropdown"
+              >
+                <a class="dropdown-item" href="/account">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Profile
                 </a>
-                <!-- Dropdown - User Information Magamit ni Siya sa settigns pwede ra  -->
-                <div
-                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                  aria-labelledby="userDropdown"
+                {% if user and user.acc_type == 'OWNER' %}
+                <a class="dropdown-item" href="/settings">
+                  <i
+                    class="fa-solid fa-user-gear fa-sm mr-2 text-gray-400"
+                  ></i>
+                  Settings
+                </a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <a
+                  class="dropdown-item"
+                  href="/logout"
+                  data-toggle="modal"
+                  data-target="#logoutModal"
                 >
-                  <a class="dropdown-item" href="/account">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Profile
-                  </a>
-                  {% if user and user.acc_type == 'OWNER' %}
-                  <a class="dropdown-item" href="/settings">
-                    <i
-                      class="fa-solid fa-user-gear fa-sm mr-2 text-gray-400"
-                    ></i>
-                    Settings
-                  </a>
-                  {% endif %}
-                  <div class="dropdown-divider"></div>
-                  <a
-                    class="dropdown-item"
-                    href="/logout"
-                    data-toggle="modal"
-                    data-target="#logoutModal"
-                  >
-                    <i
-                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
-                    ></i>
-                    Logout
-                  </a>
-                </div>
-              </li>
-            </ul>
+                  <i
+                    class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                  ></i>
+                  Logout
+                </a>
+              </div>
+            </li>
+          </ul>
           </nav>
           <!-- End of Topbar -->
 
