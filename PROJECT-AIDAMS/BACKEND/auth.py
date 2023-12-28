@@ -80,7 +80,7 @@ def loginAuthentication():
     if request.method == 'POST':
         data = request.json
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        cur.execute("SELECT acc_id,acc_type FROM ACCOUNT WHERE acc_email='"+data['acc_email']+"' AND acc_password = '"+data['acc_password']+"' AND acc_status = 'ACTIVE';")
+        cur.execute("SELECT acc_id,acc_type FROM ACCOUNT WHERE acc_email='"+data['acc_email']+"' AND acc_password = '"+hash_password(data['acc_password'])+"' AND acc_status = 'ACTIVE';")
         rows = cur.fetchone()
         cur.close()
         
