@@ -68,7 +68,13 @@ async function validateUser() {
   success = "Sign In Successful!";
   fail = "Account does not exist!";
 
-  fetched_data = await POSTHandler(data, url, success, fail, true);
+  fetched_data = await POSTHandler(data, url, success, fail, true).then(
+    async (fetched_data) => {
+      if (fetched_data) {
+        window.location.href = "/dashboard";
+      }
+    }
+  );
 }
 
 async function registerUser() {

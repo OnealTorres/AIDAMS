@@ -87,7 +87,9 @@ def loginAuthentication():
         if rows:
             session['acc_id'] = rows['acc_id']
             session['acc_type'] = rows['acc_type']
-            return jsonify(rows), 200
+            
+            response_data = {"message": "Success"}
+            return jsonify(response_data), 200
         else:
             abort(404)        
     abort(404)
