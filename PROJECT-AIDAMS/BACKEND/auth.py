@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, abort, session,r
 import psycopg2
 from psycopg2 import extras
 from configparser import ConfigParser
+import hashlib
 import os
 from .smtp import send_verification_code
 
@@ -46,8 +47,9 @@ def confirmation(acc_email):
             rows = cur.fetchone()
             if (rows):
                 abort(404)    
+            
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("INSERT INTO ACCOUNT (acc_fname, acc_mname, acc_lname, acc_email, acc_contact , acc_password ) VALUES ( '"+data['acc_fname'].title()+"', '"+data['acc_mname'].title()+"','"+data['acc_lname'].title()+"','"+data['acc_email']+"', '"+data['acc_contact']+"' , '"+data['acc_password']+"');")
+            cur.execute("INSERT INTO ACCOUNT (acc_fname, acc_mname, acc_lname, acc_email, acc_contact , acc_password ) VALUES ( '"+data['acc_fname'].title()+"', '"+data['acc_mname'].title()+"','"+data['acc_lname'].title()+"','"+data['acc_email']+"', '"+data['acc_contact']+"' , '"+hash_password(data['acc_password'])+"');")
             conn.commit()
             cur.close()  
             response_data = {"message": "Success"}
@@ -67,7 +69,7 @@ def register():
 
 '''
 ==============================
-        Sign In
+            Sign In
 ==============================
 '''
  
@@ -99,3 +101,27 @@ def loginAuthentication():
 def logout():
     session.clear()
     return redirect('/?')
+
+'''
+==============================
+         Miscellaneous
+==============================
+''' 
+
+def hash_password(password):
+    max_length = 50
+
+    # Using SHA-256 for hashing
+    hash_object = hashlib.sha256(password.encode())
+    
+    # Get the hexadecimal digest
+    hex_digest = hash_object.hexdigest()
+    
+    # Truncate to the desired length
+    truncated_digest = hex_digest[:max_length]
+    
+    return truncated_digest
+
+def compare_passwords(hashed_password1, hashed_password2):
+    return hashed_password1 == hashed_password2
+

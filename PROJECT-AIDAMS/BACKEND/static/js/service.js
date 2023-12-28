@@ -68,17 +68,7 @@ async function validateUser() {
   success = "Sign In Successful!";
   fail = "Account does not exist!";
 
-  fetched_data = await POSTHandler(data, url, success, fail, true).then(
-    async (fetched_data) => {
-      // Code to execute when data is successfully fetched
-      if (fetched_data) {
-        // Set the session data
-        sessionStorage.setItem("acc_data", JSON.stringify(fetched_data));
-        // Navigate to the home page
-        window.location.href = "/dashboard";
-      }
-    }
-  );
+  fetched_data = await POSTHandler(data, url, success, fail, true);
 }
 
 async function registerUser() {

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, session, jsonif
 import psycopg2
 from psycopg2 import extras
 from configparser import ConfigParser
+import hashlib
 import os
 import base64
 from functools import wraps
@@ -269,8 +270,8 @@ def account_details():
         if data:
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             user_data = get_account(session.get('acc_id'))
-            if user_data['acc_password'] == data['acc_password']:
-                cur.execute("UPDATE ACCOUNT SET acc_password = '"+data['new_acc_password']+"' WHERE acc_id = "+str(user_data['acc_id'])+" ;")
+            if compare_passwords(hash_password(data['acc_password']),user_data['acc_password']):
+                cur.execute("UPDATE ACCOUNT SET acc_password = '"+hash_password(data['new_acc_password'])+"' WHERE acc_id = "+str(user_data['acc_id'])+" ;")
                 conn.commit()
                 cur.close()
             else: 
@@ -332,7 +333,7 @@ def search_device(searched_data):
         rows = cur.fetchone()
         
         if rows:
-            if data['dv_password'] == rows['dv_password']:
+            if compare_passwords(hash_password(data['dv_password']),rows['dv_password']):
                 cur.execute("UPDATE DEVICE SET acc_id = '"+str(session.get('acc_id'))+"' WHERE dv_id = "+str(rows['dv_id'])+" ;")
                 conn.commit()
                 
@@ -833,7 +834,6 @@ def edit_users(acc_id):
             response_data = {"message": "Success"}
             return jsonify(response_data), 200
             
-
 @views.route('/device_admin')
 @admin_required
 def admin_device():
@@ -902,14 +902,13 @@ def admin_settings():
     elif request.method == 'POST':
         user_data = get_account(session.get('acc_id'))
         data = request.json
-        if data and data['acc_old_password'] == user_data['acc_password']:
+        if data and compare_passwords(hash_password(data['acc_old_password']), user_data['acc_password']):
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("UPDATE ACCOUNT SET acc_password = '"+ data['acc_password']+"' WHERE acc_id = "+str(user_data['acc_id'])+" ;")
+            cur.execute("UPDATE ACCOUNT SET acc_password = '"+hash_password(data['acc_password'])+"' WHERE acc_id = "+str(user_data['acc_id'])+" ;")
             conn.commit()
             response_data = {"message": "Success"}
             return jsonify(response_data), 200
     abort(404)
-
 
 '''
 ==============================
@@ -934,7 +933,7 @@ def nodeMCUDeviceRegistration():
             
             if not row:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("INSERT INTO DEVICE (dv_name,dv_key,dv_password) VALUES ('"+dv_name+"','"+dv_key+"','"+dv_password+"') RETURNING dv_id;")
+                cur.execute("INSERT INTO DEVICE (dv_name,dv_key,dv_password) VALUES ('"+dv_name+"','"+dv_key+"','"+hash_password(dv_password)+"') RETURNING dv_id;")
                 conn.commit()
                 row = cur.fetchone()
                 if row: 
@@ -1032,3 +1031,26 @@ def get_account(acc_id):
         return rows
     else:
         return None
+    
+'''
+==============================
+         Miscellaneous
+==============================
+''' 
+
+def hash_password(password):
+    max_length = 50
+
+    # Using SHA-256 for hashing
+    hash_object = hashlib.sha256(password.encode())
+    
+    # Get the hexadecimal digest
+    hex_digest = hash_object.hexdigest()
+    
+    # Truncate to the desired length
+    truncated_digest = hex_digest[:max_length]
+    
+    return truncated_digest
+
+def compare_passwords(hashed_password1, hashed_password2):
+    return hashed_password1 == hashed_password2
