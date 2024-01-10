@@ -1,0 +1,11 @@
+Device:
+
+Device Product Key: aidamsnCRE33xuU8
+DevicePassword: przM4IqXX7
+
+Accounts:
+
+ADMIN 
+email: aidamsofficial@gmail.com
+password: admin12345
+

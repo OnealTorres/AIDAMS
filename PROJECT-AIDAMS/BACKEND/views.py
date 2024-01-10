@@ -960,14 +960,6 @@ def nodeMCUDeviceUpdate():
         conn_auth_key = request.args.get('auth_key')
 
         if conn_auth_key == auth_key:
-            #print(dv_key," ",is_opened," ",is_opened_too_long," ",is_tampered,"\n")
-            
-            if serverLockToggle == '1' or serverAutoLockToggle == '1':
-                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("UPDATE DEVICE SET is_open_toggled = false, is_auto_lock_toggled = false, is_curfew_toggled = false, dv_status = '"+str(is_opened)+"', dv_auto_lock = '"+str(is_auto_lock_activated)+"' WHERE dv_key = '"+dv_key+"';")
-                conn.commit()
-                serverLockToggle = 0
-                serverAutoLockToggle = 0
             
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+dv_key+"';")
@@ -975,6 +967,17 @@ def nodeMCUDeviceUpdate():
             row = cur.fetchone()
             if not row:
                 abort(404)
+            
+            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
+            conn.commit()
+        
+            if serverLockToggle == '1' or serverAutoLockToggle == '1':
+                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cur.execute("UPDATE DEVICE SET is_open_toggled = false, is_auto_lock_toggled = false, is_curfew_toggled = false, dv_status = '"+str(is_opened)+"', dv_auto_lock = '"+str(is_auto_lock_activated)+"' WHERE dv_key = '"+dv_key+"';")
+                conn.commit()
+                serverLockToggle = 0
+                serverAutoLockToggle = 0
             
             if is_door_opened == '1' and row["is_open_toggled"] == True:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
