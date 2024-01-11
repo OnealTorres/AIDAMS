@@ -962,12 +962,7 @@ def nodeMCUDeviceUpdate():
 
         if conn_auth_key == auth_key:
             
-            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+dv_key+"';")
-            conn.commit()
-            row = cur.fetchone()
-            if not row:
-                abort(404)
+            
                 
             if serverLockToggle == '1' or serverAutoLockToggle == '1':
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
@@ -975,6 +970,13 @@ def nodeMCUDeviceUpdate():
                 conn.commit()
                 serverLockToggle = 0
                 serverAutoLockToggle = 0
+            
+            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+dv_key+"';")
+            conn.commit()
+            row = cur.fetchone()
+            if not row:
+                abort(404)
             
             if is_door_opened == '1' and row["is_open_toggled"] == True:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
