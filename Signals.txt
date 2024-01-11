@@ -1,0 +1,15 @@
+Arduino Message to NodeMCU
+
+1 - closed
+2 - open
+3 - auto locking off
+4 - auto locking on
+5 - door opened for too long
+6 - break in detected
+9 - door is closed
+10 - door is open
+
+NodeMCU Command to Arduino
+7 - toggle open and close
+8 - toggle auto locking
+n > 15 - auto locking time

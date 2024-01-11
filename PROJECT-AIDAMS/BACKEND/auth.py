@@ -32,7 +32,7 @@ conn = psycopg2.connect(
          Sign up
 ==============================
 '''
-
+#sends confirmation code to the email address
 @auth.route('/signup/confirmation/<acc_email>', methods=['GET','POST'])
 def confirmation(acc_email):
     if request.method == 'GET':
@@ -42,9 +42,11 @@ def confirmation(acc_email):
     elif request.method =='POST':
         data = request.json 
 
+        #checks if the entered code is correct
         if  data['code'] == session.get('ver_code') :   
             data = data['acc_data']
             
+            #checks if user already existed
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT * FROM ACCOUNT WHERE acc_email='"+data['acc_email'].strip()+"' OR (LOWER(acc_fname) = LOWER('"+data['acc_fname'].strip()+"') AND LOWER(acc_mname) = LOWER('"+data['acc_mname'].strip()+"') AND LOWER(acc_lname) = LOWER('"+data['acc_lname'].strip()+"') )OR acc_contact = '"+data['acc_contact'].strip()+"';")
             rows = cur.fetchone()
@@ -60,10 +62,12 @@ def confirmation(acc_email):
             return jsonify(response_data), 200
     abort(404)
 
+#user code verified page
 @auth.route('/signup/user_verified')
 def user_verified():
     return render_template('user_verified.htm')
 
+#sign up page
 @auth.route('/signup', methods=['GET','POST'])
 def register():
     if request.method == 'GET':
@@ -76,7 +80,7 @@ def register():
             Sign In
 ==============================
 '''
- 
+#sign in page
 @auth.route('/signin', methods=['GET','POST'])
 def loginAuthentication():
     if request.method == 'GET':
@@ -88,6 +92,7 @@ def loginAuthentication():
         rows = cur.fetchone()
         cur.close()
         
+        #if user is found
         if rows:
             session['acc_id'] = rows['acc_id']
             session['acc_type'] = rows['acc_type']
@@ -113,7 +118,7 @@ def logout():
          Miscellaneous
 ==============================
 ''' 
-
+#password encryption
 def hash_password(password):
     max_length = 50
 
@@ -128,6 +133,7 @@ def hash_password(password):
     
     return truncated_digest
 
+#hashed password comparison
 def compare_passwords(hashed_password1, hashed_password2):
     return hashed_password1 == hashed_password2
 
