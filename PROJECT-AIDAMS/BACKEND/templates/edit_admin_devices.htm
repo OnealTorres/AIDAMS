@@ -173,14 +173,12 @@
                                     <div class="col-md-4"><label class="labels">Device Key</label><input type="text" id="device_key" class="form-control"  placeholder="Device Key" value="{{device.dv_key if device}}" readonly></div>    
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-md-4"><label class="labels">Password</label><input type="text" id="device_password" class="form-control" placeholder="Password" value="{{device.dv_password if device}}" readonly></div>
-                              
+
                                     <div class="col-md-2"><label class="labels">Features</label><br>
                                         <label class="switch">
                                             <input type="checkbox" id="admin_features"  {% if device and device.is_subscribe %}checked{% endif %}>
                                             <span class="slider round"></span>
                                         </label> 
-                                
                                     </div>
                                 </div>
                                

@@ -932,8 +932,10 @@ def edit_devices(dv_id):
     elif request.method == 'POST':
         data  = request.json
         if data:
+            acc_id = 0
+            
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("SELECT acc_id FROM DEVICE WHERE dv_id = "+str(dv_id)+"; ")
+            cur.execute("SELECT acc_id FROM DEVICE WHERE dv_id = "+str(dv_id)+" ")
             conn.commit()
             row = cur.fetchone()
             
@@ -941,11 +943,13 @@ def edit_devices(dv_id):
             cur.execute("UPDATE DEVICE SET dv_auto_lock  = 'FALSE', dv_curfew  = 'FALSE'  WHERE dv_id = "+str(dv_id)+" ;")
             conn.commit()
             
-            acc_id = row['acc_id']
-            
-            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("UPDATE ACCOUNT SET is_subscribe = '"+str(data['is_subscribe'])+"' WHERE acc_id = "+str(acc_id)+" ;")
-            conn.commit()
+            if row['acc_id']:
+                acc_id = row['acc_id']
+                print(row,"hello")
+                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cur.execute("UPDATE ACCOUNT SET is_subscribe = '"+str(data['is_subscribe'])+"' WHERE acc_id = "+str(acc_id)+" ;")
+                conn.commit()
+                
             response_data = {"message": "Success"}
             return jsonify(response_data), 200
     abort(404)
