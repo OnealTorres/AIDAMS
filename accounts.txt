@@ -1,5 +1,5 @@
 Device:
-
+Home: http://192.168.4.1/
 Device Product Key: aidamsnCRE33xuU8
 DevicePassword: przM4IqXX7
 

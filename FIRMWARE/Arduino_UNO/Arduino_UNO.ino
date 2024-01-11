@@ -304,6 +304,8 @@ void loop()
         Serial.println("---------------------------");
         Arduino_SoftSerial.print("9 \n");
         Arduino_SoftSerial.print("1 \n");
+        is_break_in = false;
+        is_break_in_message_shown = false;
       }
     }
   }
