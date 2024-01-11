@@ -4,6 +4,7 @@ from psycopg2 import extras
 from configparser import ConfigParser
 import hashlib
 import os
+from .validator import *
 from .smtp import send_verification_code
 
 auth = Blueprint('auth', __name__)
@@ -40,16 +41,19 @@ def confirmation(acc_email):
     
     elif request.method =='POST':
         data = request.json 
-        if data['code'] == session.get('ver_code'):
+
+        if  data['code'] == session.get('ver_code') :   
             data = data['acc_data']
+            
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("SELECT * FROM ACCOUNT WHERE acc_email='"+data['acc_email']+"' OR (acc_fname = '"+data['acc_fname']+"' AND acc_mname = '"+data['acc_lname']+"' AND acc_lname = '"+data['acc_fname']+"' )OR acc_contact = '"+data['acc_contact']+"';")
+            cur.execute("SELECT * FROM ACCOUNT WHERE acc_email='"+data['acc_email'].strip()+"' OR (LOWER(acc_fname) = LOWER('"+data['acc_fname'].strip()+"') AND LOWER(acc_mname) = LOWER('"+data['acc_mname'].strip()+"') AND LOWER(acc_lname) = LOWER('"+data['acc_lname'].strip()+"') )OR acc_contact = '"+data['acc_contact'].strip()+"';")
             rows = cur.fetchone()
-            if (rows):
+            
+            if rows:
                 abort(404)    
             
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("INSERT INTO ACCOUNT (acc_fname, acc_mname, acc_lname, acc_email, acc_contact , acc_password ) VALUES ( '"+data['acc_fname'].title()+"', '"+data['acc_mname'].title()+"','"+data['acc_lname'].title()+"','"+data['acc_email']+"', '"+data['acc_contact']+"' , '"+hash_password(data['acc_password'])+"');")
+            cur.execute("INSERT INTO ACCOUNT (acc_fname, acc_mname, acc_lname, acc_email, acc_contact , acc_password ) VALUES ( '"+data['acc_fname'].title().strip()+"', '"+data['acc_mname'].title().strip()+"','"+data['acc_lname'].title().strip()+"','"+data['acc_email'].strip()+"', '"+data['acc_contact'].strip()+"' , '"+hash_password(data['acc_password'])+"');")
             conn.commit()
             cur.close()  
             response_data = {"message": "Success"}

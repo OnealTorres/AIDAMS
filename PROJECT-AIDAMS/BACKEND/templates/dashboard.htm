@@ -210,7 +210,7 @@
               <div class="input-group"></div>
             </form>
 
-            <!-- Topbar Navbar -->                                                                            
+            <!-- Topbar Navbar -->
             <ul class="navbar-nav ml-auto">
               <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -345,7 +345,14 @@
                       <!--Time Set-->
                       <div class="responsive_card">
                         <p class="mb-0">
-                          {{device.minutes_passed}} min(s) ago.
+                          {% if device.minutes_passed < 60 %}
+                          {{device.minutes_passed}} min(s) ago. {% endif %} {%
+                          if device.minutes_passed >= 60 and
+                          device.minutes_passed < 1440 %}
+                          {{device.minutes_passed // 60}} hour(s) ago. {% endif
+                          %} {% if device.minutes_passed >= 1440 %}
+                          {{device.minutes_passed // 1440}} day(s) ago. {% endif
+                          %}
                         </p>
                       </div>
 

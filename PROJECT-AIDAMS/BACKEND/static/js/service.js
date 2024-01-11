@@ -95,11 +95,15 @@ async function registerUser() {
     m_name.length <= 0 ||
     l_name.length <= 0 ||
     email.length <= 0 ||
-    contact.length <= 0 ||
-    password.length <= 0 ||
-    conf_password.length <= 0
+    contact.length < 11 ||
+    contact.length > 11 ||
+    password.length < 5 ||
+    password.length > 50 ||
+    conf_password.length <= 0 ||
+    email.indexOf("@") === -1 ||
+    email.indexOf(".") === -1
   ) {
-    alert("Please Input all the Fields");
+    alert("Please input all the fields and enter the correct details.");
     return;
   }
   const data = {
@@ -193,13 +197,19 @@ async function update_profile() {
   var file = fileInput.files[0];
 
   if (file) {
-    const imageMimeTypes = ["image/jpeg", "image/png"];
+    const imageMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
     const fileType = file.type.toLowerCase();
 
     if (!imageMimeTypes.includes(fileType)) {
       alert("Selected file is not an image.");
       return;
     }
+  } else if (
+    (file && file.size / (1024 * 1024) > 5) ||
+    (file && file.size / (1024 * 1024) < 0.1)
+  ) {
+    alert("Image size must be between 0.1 MB and 5 MB.");
+    return;
   } else {
     file = null;
   }

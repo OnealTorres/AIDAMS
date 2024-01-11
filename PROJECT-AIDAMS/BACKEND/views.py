@@ -5,6 +5,7 @@ from configparser import ConfigParser
 import hashlib
 import os
 import base64
+from .validator import *
 from functools import wraps
 from datetime import datetime, time, timedelta
 
@@ -967,11 +968,7 @@ def nodeMCUDeviceUpdate():
             row = cur.fetchone()
             if not row:
                 abort(404)
-            
-            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
-            conn.commit()
-        
+                
             if serverLockToggle == '1' or serverAutoLockToggle == '1':
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("UPDATE DEVICE SET is_open_toggled = false, is_auto_lock_toggled = false, is_curfew_toggled = false, dv_status = '"+str(is_opened)+"', dv_auto_lock = '"+str(is_auto_lock_activated)+"' WHERE dv_key = '"+dv_key+"';")
@@ -992,6 +989,11 @@ def nodeMCUDeviceUpdate():
             if is_tampered == '1':
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO NOTIFICATION (ntf_type, ntf_message, dv_id) VALUES ('Break In Alert', 'Please contact local authorithy.', (SELECT dv_id FROM DEVICE WHERE dv_key = '"+dv_key+"'));")
+                conn.commit()
+            
+            if is_auto_lock_activated == '1':
+                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
                 conn.commit()
             
             if row["is_open_toggled"]:

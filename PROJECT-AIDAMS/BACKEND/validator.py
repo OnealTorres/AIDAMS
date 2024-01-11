@@ -10,17 +10,18 @@ def add_device(dv_password):
 
 # User Account Settings
 def user_settings(acc_fname, acc_mname, acc_lname, acc_password, acc_contact, acc_email):
+
     if len(acc_fname) > 50 :
         return False
     elif len(acc_mname) > 50 :
         return False
     elif len(acc_lname) > 50 :
         return False
-    elif len(acc_password) > 50:
+    elif len(acc_password) > 50 or len(acc_password) < 6:
         return False
-    elif len(acc_contact) > 11:
+    elif len(acc_contact) != 11:
         return False
-    elif not acc_email.find('@') and not acc_email.find('.'):
+    elif acc_email.find('@') == -1 or acc_email.find('.') == -1:
         return False
     return True
 
@@ -43,8 +44,6 @@ def user_Filetype(acc_profile):
 
     return is_valid_type and min_size < filesize < max_size
 
-
-# SUPPPPPPPPER SULIT ADMIN 
 # Edit Admin Users
 def admin_user_edit(acc_fname, acc_mname, acc_lname, acc_password, acc_contact, acc_email):
     if len(acc_fname) > 50 :
