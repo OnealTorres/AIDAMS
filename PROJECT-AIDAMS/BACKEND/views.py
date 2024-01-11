@@ -991,10 +991,10 @@ def nodeMCUDeviceUpdate():
                 cur.execute("INSERT INTO NOTIFICATION (ntf_type, ntf_message, dv_id) VALUES ('Break In Alert', 'Please contact local authorithy.', (SELECT dv_id FROM DEVICE WHERE dv_key = '"+dv_key+"'));")
                 conn.commit()
             
-            if is_auto_lock_activated == '1':
-                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-                cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
-                conn.commit()
+            # if is_auto_lock_activated == '1':
+            #     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+            #     cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
+            #     conn.commit()
             
             if row["is_open_toggled"]:
                serverLockToggle = 1 
