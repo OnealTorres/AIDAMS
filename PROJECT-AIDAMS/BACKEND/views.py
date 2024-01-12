@@ -936,7 +936,7 @@ def nodeMCUDeviceRegistration():
             conn.commit()
             row = cur.fetchone()
             
-            if not row['dv_id']:
+            if row['dv_id'] == None:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO DEVICE (dv_name,dv_key,dv_password) VALUES ('"+dv_name+"','"+dv_key+"','"+hash_password(dv_password)+"') RETURNING dv_id;")
                 conn.commit()
