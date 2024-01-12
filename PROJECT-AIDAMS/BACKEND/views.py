@@ -5,6 +5,7 @@ from configparser import ConfigParser
 import hashlib
 import os
 import base64
+from .validator import *
 from functools import wraps
 from datetime import datetime, time, timedelta
 
@@ -33,7 +34,7 @@ auth_key = config.get('device_auth','auth_key')
      Decorator to check if the user is logged in or is admin
 ============================================================
 '''
-
+#checks if the current user is already logged in, if not display page not found page
 def login_required(f):
     @wraps(f)
     def wrapped_view(*args, **kwargs):
@@ -43,7 +44,7 @@ def login_required(f):
         # Call the original route function
         return f(*args, **kwargs)
     return wrapped_view
-
+#checks if the current user is already logged in and is an admin, if not display page not found page
 def admin_required(f):
     @wraps(f)
     def wrapped_admin(*args, **kwargs):
@@ -78,45 +79,54 @@ def contact():
 
 '''
 ==============================
-        Dashboard 
+         Dashboard 
 ==============================
 '''
 
 @views.route('/dashboard')
 @login_required
 def dashboard():
+    #display all devices and user information
     if request.method == "GET":
         if session.get('acc_type') == 'ADMIN':
             return redirect('/dashboard_admin')
         
+        #get current user information
         user_info = get_account(session.get('acc_id'))
+        
+        #get user profile picture
         profile = None
         if user_info['acc_profile']:
             img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
             profile =  f'data:image/png;base64, {img_data}'
-            
+        
+        
         if session.get('acc_type') == 'OWNER':
+            #get devices where owner is the current user
+            
             all_device = None
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT *, FLOOR(EXTRACT(EPOCH FROM current_timestamp - date_updated) / 60) AS minutes_passed FROM DEVICE WHERE acc_id = "+str(session.get('acc_id'))+" ORDER BY(dv_id);")
             rows = cur.fetchall()
             cur.close()
-            if (rows):
+            if rows:
                 all_device = rows
             return render_template('dashboard.htm', devices = all_device, user = user_info, profile_pic = profile)
         
         elif session.get('acc_type') == 'USER':
+            #get devices where a blc_member belongs to a bloc then gets the owner of the bloc then diplay all his/her devices
+            
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT *, BLOC.acc_id as owner_id FROM BLC_MEMBER INNER JOIN BLOC USING(blc_id) WHERE BLC_MEMBER.acc_id = "+str(session.get('acc_id'))+" ; ")
             rows = cur.fetchone()
             all_device = None
             if rows:
-                
+                #searches the devices under the owner_id from the past query
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("SELECT *, FLOOR(EXTRACT(EPOCH FROM current_timestamp - date_updated) / 60) AS minutes_passed FROM DEVICE WHERE acc_id = "+str(rows['owner_id'])+" ORDER BY(dv_id);")
                 rows = cur.fetchall()
                 
-                if (rows):
+                if rows:
                     all_device = rows
                     
             user_info = get_account(session.get('acc_id'))
@@ -127,34 +137,43 @@ def dashboard():
                 profile =  f'data:image/png;base64, {img_data}'
 
             return render_template('dashboard.htm', devices = all_device, user = user_info, profile_pic = profile)
-        
+
+#lock and unlock button 
 @views.route('/dashboard_btn/<int:dv_id>/<dv_status>', methods = ['GET', 'POST'])
 @login_required
 def dashboard_btn_lock(dv_status, dv_id):
     if request.method == "POST":
+        # Convert dv_status from string to boolean
         dv_status = True  if dv_status == 'False' else False
         user_info = get_account(session.get('acc_id'))
         
+        # Check if the user is an owner
         if session.get('acc_type') == 'OWNER':
+            # Insert history record
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("INSERT INTO HISTORY (acc_id,dv_id,his_dv_status) VALUES ( "+str(session.get('acc_id'))+", "+str(dv_id)+", "+str(dv_status)+" ); ")
             conn.commit()
-           
+
+            # Update device status
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("UPDATE DEVICE SET is_open_toggled = '1' WHERE dv_id = "+str(dv_id)+" RETURNING is_open_toggled, dv_id;")
+            cur.execute("UPDATE DEVICE SET is_open_toggled = '1' WHERE dv_id = "+str(dv_id)+" ;")
             conn.commit()
-            print(cur.fetchone())
             cur.close()
             
+            # Fetch device information
             response_data = {"message": "Success"}
             return jsonify(response_data), 200
         
+       
+        # Check if the user is a regular user
         elif session.get('acc_type') == 'USER':
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT * FROM DEVICE WHERE dv_id = "+str(dv_id)+";")
             row = cur.fetchone()
             
+            # Check if device information is retrieved
             if row:
+                # Get current time
                 current_time = datetime.now().time()
 
                 # Convert the current time to a datetime object with a dummy date
@@ -166,71 +185,96 @@ def dashboard_btn_lock(dv_status, dv_id):
                 # Extract the time part from the new datetime
                 new_current_time = new_datetime.time
                 
+                 # Define curfew time and limit
                 curfew_time_str = row['dv_curfew_time']
                 curfew_limit_time = time(5, 0, 0) #5 AM
                 
+                # Check if device has curfew and if the current time is within curfew
                 if row['dv_curfew'] and new_current_time < curfew_time_str and new_current_time > curfew_limit_time:
+                    # Insert history record
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                     cur.execute("INSERT INTO HISTORY (acc_id,dv_id,his_dv_status) VALUES ( "+str(session.get('acc_id'))+", "+str(dv_id)+", "+str(dv_status)+" ); ")
                     conn.commit()
                     
+                     # Update device status
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                     cur.execute("UPDATE DEVICE SET is_open_toggled = '1' WHERE dv_id = "+str(dv_id)+" ; ")
                     conn.commit()
                     cur.close()
+                    
+                     # Return success message
                     response_data = {"message": "Success"}
                     return jsonify(response_data), 200
                 
+                # Check if device has curfew and if the current time is outside curfew
                 if row['dv_curfew'] and new_current_time > curfew_time_str and new_current_time < curfew_limit_time:
                     abort(404)
                 
                 else:
+                    # If no curfew or not within curfew, update device status
+                    # Insert history record
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                     cur.execute("INSERT INTO HISTORY (acc_id,dv_id,his_dv_status) VALUES ( "+str(session.get('acc_id'))+", "+str(dv_id)+", "+str(dv_status)+" ); ")
                     conn.commit()
                     
+                    # Update device status
                     cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                     cur.execute("UPDATE DEVICE SET is_open_toggled = 'True' WHERE dv_id = "+str(dv_id)+" ; ")
                     conn.commit()
                     cur.close()
+                    
+                     # Return success message
                     response_data = {"message": "Success"}
                     return jsonify(response_data), 200
                     
  
-@views.route('/dashboard-auto-lock/<dv_auto_lock>', methods = ['GET', 'POST'])
+# Dashboard auto-lock route
+@views.route('/dashboard-auto-lock/<dv_auto_lock>', methods=['GET', 'POST'])
 @login_required
 def dashboard_auto_lock(dv_auto_lock):
+    # Check if the request method is POST
     if request.method == "POST":
-        
-        dv_auto_lock = True  if dv_auto_lock == 'False' else False
+        # Convert dv_auto_lock from string to boolean
+        dv_auto_lock = True if dv_auto_lock == 'False' else False
 
+        # Update auto-lock status in the database for the current user
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("UPDATE DEVICE SET is_auto_lock_toggled = 'True' WHERE acc_id = "+str(session.get('acc_id'))+" ;")
         conn.commit()
         cur.close()
+
+        # Return success message
         response_data = {"message": "Success"}
         return jsonify(response_data), 200
 
 
-@views.route('/dashboard-curfew/<dv_curfew>', methods = ['GET', 'POST'])
+
+# Dashboard curfew route
+@views.route('/dashboard-curfew/<dv_curfew>', methods=['GET', 'POST'])
 @login_required
 def dashboard_curfew(dv_curfew):
+    # Check if the request method is POST
     if request.method == "POST":
-        
-        dv_curfew = True  if dv_curfew == 'False' else False
+        # Convert dv_curfew from string to boolean
+        dv_curfew = True if dv_curfew == 'False' else False
+
+        # Update curfew status in the database for the current user
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("UPDATE DEVICE SET dv_curfew = "+str(dv_curfew)+", is_curfew_toggled = 'True' WHERE acc_id = "+str(session.get('acc_id'))+" ; ")
         conn.commit()
         cur.close()
+
+        # Return success message
         response_data = {"message": "Success"}
         return jsonify(response_data), 200
+
 
 '''
 ==============================
            Profile 
 ==============================
 ''' 
-
+#displays the user account information
 @views.route('/account', methods = ['GET', 'POST'])
 @login_required
 def user_account():
@@ -246,7 +290,7 @@ def user_account():
             img_data = base64.b64encode(user_info['acc_profile']).decode('utf-8')
         return render_template('account.htm', user = user_info, user_profile = f"data:image/png;base64, {img_data}", profile_pic = profile)
  
-
+#sets the new profile picture using change photo button
 @views.route('/account/profile', methods = ['GET', 'POST'])
 @login_required
 def account_profile():
@@ -261,22 +305,26 @@ def account_profile():
         response_data = {"message": "Success"}
         return jsonify(response_data), 200
 
-
+#updateds the password of the current user
 @views.route('/account/details', methods = ['GET', 'POST'])
 @login_required
 def account_details():
     if request.method == "POST":
         data = request.json
+        #checks if data sent is not empty
         if data:
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+            #gets current user information
             user_data = get_account(session.get('acc_id'))
+            #checks if the old password matches the new password
             if compare_passwords(hash_password(data['acc_password']),user_data['acc_password']):
+                #updates the password
                 cur.execute("UPDATE ACCOUNT SET acc_password = '"+hash_password(data['new_acc_password'])+"' WHERE acc_id = "+str(user_data['acc_id'])+" ;")
                 conn.commit()
                 cur.close()
             else: 
                 abort(404)
-                
+            #send success message
             response_data = {"message": "Success"}
             return jsonify(response_data), 200
         
@@ -287,7 +335,7 @@ def account_details():
            Devices 
 ==============================
 '''  
-
+#display the search device page
 @views.route('/add_device')
 @login_required
 def add_device():
@@ -300,12 +348,13 @@ def add_device():
             profile =  f'data:image/png;base64, {img_data}'
         return render_template('add_device.htm', devices = all_devices, user = user_info, profile_pic = profile)
 
-
+#searches the device in the database
 @views.route('/add_device/<searched_data>', methods = ['GET', 'POST'])
 @login_required
 def search_device(searched_data):
     if request.method == 'GET':
         all_devices = None
+        #checks if there is an owner
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+str(searched_data)+"' AND acc_id IS NULL")
         rows = cur.fetchall()
@@ -321,23 +370,26 @@ def search_device(searched_data):
     
     elif request.method == 'POST':
         data = request.json
-        
+        #checks if the current user is already a member if he/she is thn abort
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("SELECT * FROM BLC_MEMBER WHERE acc_id = "+str(session.get('acc_id'))+" ;")
         row = cur.fetchone()
         if row:
             abort(404)
-            
+        
+        #if the device exist
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+str(searched_data)+"'")
         rows = cur.fetchone()
         
         if rows:
+            #checks if the password entered and password of the device matched
             if compare_passwords(hash_password(data['dv_password']),rows['dv_password']):
+                #updates the device owner 
                 cur.execute("UPDATE DEVICE SET acc_id = '"+str(session.get('acc_id'))+"' WHERE dv_id = "+str(rows['dv_id'])+" ;")
                 conn.commit()
-                
                 if session.get('acc_type') == 'USER':
+                    #updates the current user type to owner
                     cur.execute("UPDATE ACCOUNT SET acc_type = 'OWNER'  WHERE acc_id = "+str(session.get('acc_id'))+" ;")
                     conn.commit()
                     session['acc_type'] = 'OWNER'
@@ -352,18 +404,19 @@ def search_device(searched_data):
            MEMBERS 
 ==============================
 ''' 
-
+#displays all the members in a bloc/ view members   
 @views.route('/members')
 @login_required
 def members():
     if request.method == 'GET':
         all_members = None
         all_profile = []
-        
+        #gets all the members in a specific BLOC
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
         cur.execute("SELECT * FROM ACCOUNT LEFT JOIN BLC_MEMBER USING (acc_id) WHERE blc_id IS NOT NULL AND acc_id != "+str(session.get('acc_id'))+" ; ")
         rows = cur.fetchall()
         
+        #if the  current user is a member of a bloc
         if rows:
             all_members = rows
             for user in rows:
@@ -380,7 +433,7 @@ def members():
             profile =  f'data:image/png;base64, {img_data}'
         return render_template('members.htm', members = all_members, profiles = all_profile, user = user_info, profile_pic = profile)
 
-
+#search a member page
 @views.route('/members/add_members' , methods = ['GET', 'POST'])
 @login_required
 def add_members():
@@ -397,21 +450,26 @@ def add_members():
     elif request.method == 'POST':
         data = request.json
         if data:
+            #checks if there is a bloc where current user is a member
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("SELECT * FROM BLOC WHERE acc_id = "+str(session.get('acc_id'))+"; ")
             rows = cur.fetchone()
             
+            #if owner does not have a bloc yet
             if not rows:
+                #create new bloc where the current user is the owner
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO BLOC (acc_id) VALUES ("+str(session.get('acc_id'))+") RETURNING blc_id; ")
                 conn.commit()
                 row = cur.fetchone()
                 
+                #insert the searched member to the bloc of the owner
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO BLC_MEMBER  (acc_id, blc_id) VALUES ("+str(data['acc_id'])+", "+str(row['blc_id'])+"); ")
                 conn.commit()
                 
             else:
+                #if owner has already a bloc then we insert the new member to the blc_member table
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO BLC_MEMBER (acc_id, blc_id) VALUES ("+str(data['acc_id'])+", "+str(rows['blc_id'])+"); ")
                 conn.commit()
@@ -421,13 +479,14 @@ def add_members():
                 
     abort(404)
     
-
+#remove the member in a bloc
 @views.route('/members/remove_member' , methods = ['GET', 'POST'])
 @login_required
 def remove_member():
     if request.method == 'POST':
         data = request.json
         if data:
+            #removes the member in the blc_member table
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
             cur.execute("DELETE FROM BLC_MEMBER WHERE acc_id = "+str(data['acc_id'])+"; ")
             conn.commit()
@@ -873,8 +932,10 @@ def edit_devices(dv_id):
     elif request.method == 'POST':
         data  = request.json
         if data:
+            acc_id = 0
+            
             cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("SELECT acc_id FROM DEVICE WHERE dv_id = "+str(dv_id)+"; ")
+            cur.execute("SELECT acc_id FROM DEVICE WHERE dv_id = "+str(dv_id)+" ")
             conn.commit()
             row = cur.fetchone()
             
@@ -882,11 +943,13 @@ def edit_devices(dv_id):
             cur.execute("UPDATE DEVICE SET dv_auto_lock  = 'FALSE', dv_curfew  = 'FALSE'  WHERE dv_id = "+str(dv_id)+" ;")
             conn.commit()
             
-            acc_id = row['acc_id']
-            
-            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("UPDATE ACCOUNT SET is_subscribe = '"+str(data['is_subscribe'])+"' WHERE acc_id = "+str(acc_id)+" ;")
-            conn.commit()
+            if row['acc_id']:
+                acc_id = row['acc_id']
+                print(row,"hello")
+                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cur.execute("UPDATE ACCOUNT SET is_subscribe = '"+str(data['is_subscribe'])+"' WHERE acc_id = "+str(acc_id)+" ;")
+                conn.commit()
+                
             response_data = {"message": "Success"}
             return jsonify(response_data), 200
     abort(404)
@@ -930,7 +993,7 @@ def nodeMCUDeviceRegistration():
             cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+dv_key+"';")
             conn.commit()
             row = cur.fetchone()
-            return f'{row["dv_auto_lock_time"]},{row["dv_status"]},{row["dv_auto_lock"]}'
+            
             if not row:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO DEVICE (dv_name,dv_key,dv_password) VALUES ('"+dv_name+"','"+dv_key+"','"+hash_password(dv_password)+"') RETURNING dv_id;")
@@ -961,23 +1024,21 @@ def nodeMCUDeviceUpdate():
 
         if conn_auth_key == auth_key:
             
-            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+dv_key+"';")
-            conn.commit()
-            row = cur.fetchone()
-            if not row:
-                abort(404)
             
-            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
-            conn.commit()
-        
+                
             if serverLockToggle == '1' or serverAutoLockToggle == '1':
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("UPDATE DEVICE SET is_open_toggled = false, is_auto_lock_toggled = false, is_curfew_toggled = false, dv_status = '"+str(is_opened)+"', dv_auto_lock = '"+str(is_auto_lock_activated)+"' WHERE dv_key = '"+dv_key+"';")
                 conn.commit()
                 serverLockToggle = 0
                 serverAutoLockToggle = 0
+            
+            cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cur.execute("SELECT * FROM DEVICE WHERE dv_key = '"+dv_key+"';")
+            conn.commit()
+            row = cur.fetchone()
+            if not row:
+                abort(404)
             
             if is_door_opened == '1' and row["is_open_toggled"] == True:
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
@@ -992,6 +1053,11 @@ def nodeMCUDeviceUpdate():
             if is_tampered == '1':
                 cur = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cur.execute("INSERT INTO NOTIFICATION (ntf_type, ntf_message, dv_id) VALUES ('Break In Alert', 'Please contact local authorithy.', (SELECT dv_id FROM DEVICE WHERE dv_key = '"+dv_key+"'));")
+                conn.commit()
+            
+            if is_auto_lock_activated == '1':
+                cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cur.execute("UPDATE DEVICE SET dv_status = '"+str(is_opened)+"' WHERE dv_key = '"+dv_key+"';")
                 conn.commit()
             
             if row["is_open_toggled"]:
